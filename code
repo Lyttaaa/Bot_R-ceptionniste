@@ -22,7 +22,7 @@ welcome_messages = [
     "✨ *Un éclat de lumière traverse le ciel… Un fragment du destin vient de s’incarner.*
 🔔 {membre}, bienvenue parmi nous ! Prenez un instant pour le saluer et l’orienter !",
     "🦉 *Un cri lointain retentit dans la nuit, annonçant un nouvel arrivant sous la protection des astres.*
-📜 {membre} rejoint Lumharel ! Que sa quête commence… Souhaitez-lui un bon départ !
+📜 {membre} rejoint Lumharel ! Que sa quête commence… Souhaitez-lui un bon départ !"
 ]
 
 # Messages de bienvenue en DM
