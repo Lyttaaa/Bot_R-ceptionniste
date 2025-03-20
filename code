@@ -1,0 +1,54 @@
+import discord
+import random
+import os
+from discord.ext import commands
+
+TOKEN = os.getenv("DISCORD_TOKEN")  # Récupère le token depuis Railway
+GUILD_ID = int(os.getenv("GUILD_ID"))  # ID du serveur Discord
+WELCOME_CHANNEL_ID = int(os.getenv("WELCOME_CHANNEL_ID"))  # ID du salon de bienvenue
+
+intents = discord.Intents.default()
+intents.members = True  # Active l'intent des nouveaux membres
+bot = commands.Bot(command_prefix="!", intents=intents)
+
+# Messages de bienvenue aléatoires
+welcome_messages = [
+    "☁ *Un léger brouillard s’élève, et lorsque la brume se dissipe… une nouvelle âme se tient parmi nous.*
+✨ Bienvenue, {membre} ! Lumharel t’accueille. Prenez un instant pour lui souhaiter la bienvenue !",
+    "🔥 *Une flamme vacille dans l’air avant de s’élever doucement… Une présence nouvelle s’ancre dans le monde.*
+🌟 {membre} vient d’être invoqué(e) en Lumharel ! Faites-lui un accueil chaleureux !",
+    "🌪 *Le vent porte un murmure à travers les terres… Une voix nouvelle résonne dans Lumharel.*
+🌍 {membre} a rejoint notre monde ! Laissez-lui un message pour guider ses premiers pas !",
+    "✨ *Un éclat de lumière traverse le ciel… Un fragment du destin vient de s’incarner.*
+🔔 {membre}, bienvenue parmi nous ! Prenez un instant pour le saluer et l’orienter !",
+    "🦉 *Un cri lointain retentit dans la nuit, annonçant un nouvel arrivant sous la protection des astres.*
+📜 {membre} rejoint Lumharel ! Que sa quête commence… Souhaitez-lui un bon départ !
+]
+
+# Messages de bienvenue en DM
+dm_messages = [
+    "🌪 *Le vent murmure ton arrivée...* {user}, ta place est à découvrir. Rejoins le canal #salons-et-rôles !",
+    "🔥 *Une braise rougeoyante danse dans l’air…* {user}, une nouvelle flamme s’éveille en Lumharel. Direction #salons-et-rôles !",
+    "✨ *Un scintillement traverse l’air...* {user}, l’ombre et la lumière t’accueillent. Trouve ta voie et rejoins le voyage… #salons-et-rôles !"
+]
+
+@bot.event
+async def on_ready():
+    print(f'✅ {bot.user} est connecté !')
+
+@bot.event
+async def on_member_join(member):
+    guild = bot.get_guild(GUILD_ID)
+    channel = guild.get_channel(WELCOME_CHANNEL_ID)
+    
+    if channel:
+        welcome_text = random.choice(welcome_messages).replace("{user}", member.mention)
+        await channel.send(welcome_text)
+    
+    try:
+        dm_text = random.choice(dm_messages).replace("{user}", member.name)
+        await member.send(dm_text)
+    except:
+        print(f"❌ Impossible d'envoyer un DM à {member.name}")
+
+bot.run(TOKEN)
