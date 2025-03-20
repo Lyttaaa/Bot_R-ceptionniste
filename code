@@ -37,6 +37,13 @@ async def on_ready():
     print(f'✅ {bot.user} est connecté !')
 
 @bot.event
+async def on_ready():
+    print(f'✅ {bot.user} est bien en ligne sur Discord !')
+    channel = bot.get_channel(WELCOME_CHANNEL_ID)
+    if channel:
+        await channel.send("Je suis en ligne ! 🔥")
+
+@bot.event
 async def on_member_join(member):
     guild = bot.get_guild(GUILD_ID)
     channel = guild.get_channel(WELCOME_CHANNEL_ID)
