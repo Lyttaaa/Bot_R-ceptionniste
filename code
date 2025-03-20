@@ -14,15 +14,15 @@ bot = commands.Bot(command_prefix="!", intents=intents)
 # Messages de bienvenue aléatoires
 welcome_messages = [
     """☁ *Un léger brouillard s’élève, et lorsque la brume se dissipe… une nouvelle âme se tient parmi nous.*
-✨ Bienvenue, {membre} ! Lumharel t’accueille. Prenez un instant pour lui souhaiter la bienvenue !""",
+✨ Bienvenue, {user} ! Lumharel t’accueille. Prenez un instant pour lui souhaiter la bienvenue !""",
     """🔥 *Une flamme vacille dans l’air avant de s’élever doucement… Une présence nouvelle s’ancre dans le monde.*
-🌟 {membre} vient d’être invoqué(e) en Lumharel ! Faites-lui un accueil chaleureux !""",
+🌟 {user} vient d’être invoqué(e) en Lumharel ! Faites-lui un accueil chaleureux !""",
     """🌪 *Le vent porte un murmure à travers les terres… Une voix nouvelle résonne dans Lumharel.*
-🌍 {membre} a rejoint notre monde ! Laissez-lui un message pour guider ses premiers pas !""",
+🌍 {user} a rejoint notre monde ! Laissez-lui un message pour guider ses premiers pas !""",
     """✨ *Un éclat de lumière traverse le ciel… Un fragment du destin vient de s’incarner.*
-🔔 {membre}, bienvenue parmi nous ! Prenez un instant pour le saluer et l’orienter !""",
+🔔 {user}, bienvenue parmi nous ! Prenez un instant pour le saluer et l’orienter !""",
     """🦉 *Un cri lointain retentit dans la nuit, annonçant un nouvel arrivant sous la protection des astres.*
-📜 {membre} rejoint Lumharel ! Que sa quête commence… Souhaitez-lui un bon départ !"""
+📜 {user} rejoint Lumharel ! Que sa quête commence… Souhaitez-lui un bon départ !"""
 ]
 
 # Messages de bienvenue en DM
