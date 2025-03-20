@@ -44,12 +44,12 @@ async def on_ready():
         await channel.send("Je suis en ligne ! 🔥")
 
 @bot.event
+@bot.event
 async def on_member_join(member):
-    guild = bot.get_guild(GUILD_ID)
-    channel = guild.get_channel(WELCOME_CHANNEL_ID)
-    
+    channel = bot.get_channel(WELCOME_CHANNEL_ID)  # Assure-toi que c'est l'ID correct du salon
     if channel:
-        welcome_text = welcome_text = random.choice(welcome_messages).replace("{user}", member.mention)
+        welcome_text = random.choice(welcome_messages).replace("{membre}", member.mention)
+        print(f"DEBUG - Message envoyé : {welcome_text}")  # Affichage du message dans les logs
         await channel.send(welcome_text)
     
     try:
