@@ -2,60 +2,61 @@ import discord
 import random
 import os
 from discord.ext import commands
+from discord import app_commands
 
-TOKEN = os.getenv("DISCORD_TOKEN")  # Récupère le token depuis Railway
-GUILD_ID = int(os.getenv("GUILD_ID"))  # ID du serveur Discord
-WELCOME_CHANNEL_ID = int(os.getenv("WELCOME_CHANNEL_ID"))  # ID du salon de bienvenue
+TOKEN = os.getenv("DISCORD_TOKEN")  
+GUILD_ID = int(os.getenv("GUILD_ID"))  
+WELCOME_CHANNEL_ID = int(os.getenv("WELCOME_CHANNEL_ID"))  
 
 intents = discord.Intents.default()
-intents.members = True  # Active l'intent des nouveaux membres
+intents.members = True  
 bot = commands.Bot(command_prefix="!", intents=intents)
 
-# Messages de bienvenue aléatoires
+# Messages publics
 welcome_messages = [
-    """☁ *Un léger brouillard s’élève, et lorsque la brume se dissipe… une nouvelle âme se tient parmi nous.*
+    """☁ *Un léger brouillard s’élève, et lorsque la brume se dissipe… une nouvelle âme se tient parmi nous.*  
 ✨ Bienvenue, {user} ! Lumharel t’accueille. Prenez un instant pour lui souhaiter la bienvenue !""",
-    """🔥 *Une flamme vacille dans l’air avant de s’élever doucement… Une présence nouvelle s’ancre dans le monde.*
-🌟 {user} vient d’être invoqué(e) en Lumharel ! Faites-lui un accueil chaleureux !""",
-    """🌪 *Le vent porte un murmure à travers les terres… Une voix nouvelle résonne dans Lumharel.*
+    """🔥 *Une flamme vacille dans l’air avant de s’élever doucement… Une présence nouvelle s’ancre dans le monde.*  
+🌟 {user} vient d’être invoqué·e en Lumharel ! Faites-lui un accueil chaleureux !""",
+    """🌪 *Le vent porte un murmure à travers les terres… Une voix nouvelle résonne dans Lumharel.*  
 🌍 {user} a rejoint notre monde ! Laissez-lui un message pour guider ses premiers pas !""",
-    """✨ *Un éclat de lumière traverse le ciel… Un fragment du destin vient de s’incarner.*
+    """✨ *Un éclat de lumière traverse le ciel… Un fragment du destin vient de s’incarner.*  
 🔔 {user}, bienvenue parmi nous ! Prenez un instant pour le saluer et l’orienter !""",
-    """🦉 *Un cri lointain retentit dans la nuit, annonçant un nouvel arrivant sous la protection des astres.*
+    """🦉 *Un cri lointain retentit dans la nuit, annonçant un nouvel arrivant sous la protection des astres.*  
 📜 {user} rejoint Lumharel ! Que sa quête commence… Souhaitez-lui un bon départ !"""
 ]
 
-# Messages de bienvenue en DM
-dm_messages = [
+# Messages éphemeral
+ephemeral_messages = [
     "🌪 *Le vent murmure ton arrivée...* {user}, ta place est à découvrir. Rejoins le canal #salons-et-rôles !",
     "🔥 *Une braise rougeoyante danse dans l’air…* {user}, une nouvelle flamme s’éveille en Lumharel. Direction #salons-et-rôles !",
     "✨ *Un scintillement traverse l’air...* {user}, l’ombre et la lumière t’accueillent. Trouve ta voie et rejoins le voyage… #salons-et-rôles !"
 ]
 
-@bot.event
-async def on_ready():
-    print(f'✅ {bot.user} est connecté !')
+# Vue avec bouton
+class WelcomeView(discord.ui.View):
+    def __init__(self, member):
+        super().__init__(timeout=None)
+        self.member = member
+
+    @discord.ui.button(label="📜 Découvrir mon guide", style=discord.ButtonStyle.primary)
+    async def send_ephemeral(self, interaction: discord.Interaction, button: discord.ui.Button):
+        if interaction.user.id != self.member.id:
+            await interaction.response.send_message("⚠️ Ce guide n'est pas pour toi !", ephemeral=True)
+            return
+        
+        message = random.choice(ephemeral_messages).replace("{user}", interaction.user.mention)
+        await interaction.response.send_message(message, ephemeral=True)
 
 @bot.event
 async def on_ready():
     print(f'✅ {bot.user} est bien en ligne sur Discord !')
-    channel = bot.get_channel(WELCOME_CHANNEL_ID)
-    if channel:
-        await channel.send("Je suis en ligne ! 🔥")
 
 @bot.event
-@bot.event
 async def on_member_join(member):
-    channel = bot.get_channel(WELCOME_CHANNEL_ID)  # Assure-toi que c'est l'ID correct du salon
+    channel = bot.get_channel(WELCOME_CHANNEL_ID)
     if channel:
         welcome_text = random.choice(welcome_messages).replace("{user}", member.mention)
-        print(f"DEBUG - Message envoyé : {welcome_text}")  # Affichage du message dans les logs
-        await channel.send(welcome_text)
-    
-    try:
-        dm_text = random.choice(dm_messages).replace("{user}", member.name)
-        await member.send(dm_text)
-    except:
-        print(f"❌ Impossible d'envoyer un DM à {member.name}")
+        await channel.send(welcome_text, view=WelcomeView(member))
 
 bot.run(TOKEN)
