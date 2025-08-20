@@ -2,17 +2,16 @@ import discord
 import random
 import os
 from discord.ext import commands
-from discord import app_commands
 
-TOKEN = os.getenv("DISCORD_TOKEN")  
-GUILD_ID = int(os.getenv("GUILD_ID"))  
-WELCOME_CHANNEL_ID = int(os.getenv("WELCOME_CHANNEL_ID"))  
+TOKEN = os.getenv("DISCORD_TOKEN")
+GUILD_ID = int(os.getenv("GUILD_ID"))
+WELCOME_CHANNEL_ID = int(os.getenv("WELCOME_CHANNEL_ID"))
 
 intents = discord.Intents.default()
-intents.members = True  
+intents.members = True
 bot = commands.Bot(command_prefix="!", intents=intents)
 
-# Messages publics
+# Messages de bienvenue aléatoires (channel public)
 welcome_messages = [
     """☁ *Un léger brouillard s’élève, et lorsque la brume se dissipe… une nouvelle âme se tient parmi nous.*  
 ✨ Bienvenue, {user} ! Lumharel t’accueille. Prenez un instant pour lui souhaiter la bienvenue !""",
@@ -26,37 +25,63 @@ welcome_messages = [
 📜 {user} rejoint Lumharel ! Que sa quête commence… Souhaitez-lui un bon départ !"""
 ]
 
-# Messages éphemeral
-ephemeral_messages = [
-    "🌪 *Le vent murmure ton arrivée...* {user}, ta place est à découvrir. Rejoins le canal #salons-et-rôles !",
-    "🔥 *Une braise rougeoyante danse dans l’air…* {user}, une nouvelle flamme s’éveille en Lumharel. Direction #salons-et-rôles !",
-    "✨ *Un scintillement traverse l’air...* {user}, l’ombre et la lumière t’accueillent. Trouve ta voie et rejoins le voyage… #salons-et-rôles !"
-]
+# Texte du guide immersif (ephemeral)
+guide_message = """🌟 **Bienvenue en Lumharel, voyageur !**
 
-# Vue avec bouton
-class WelcomeView(discord.ui.View):
-    def __init__(self, member):
+Ton périple commence ici. Pour trouver ta place parmi nous, suis ces étapes :  
+
+---
+
+📜 **1. Découvre nos terres**  
+→ Consulte le salon <1352146782095802378> pour en apprendre plus sur l’univers de Lumharel.  
+→ Les rumeurs et histoires du monde se trouvent dans <1352130949403512872>.  
+
+---
+
+🎭 **2. Choisis ton rôle**  
+→ Rendez-toi dans Salons et Roles pour choisir tes rôles et débloquer les accès à tout le serveur.  
+
+---
+
+🙏 **3. Approche des Autels**  
+→ Chaque jour, tu peux prier ou faire une offrande aux divinités en te rendant à leur autels: <1353209819879837716>.  
+→ Elles t’accorderont des bénédictions et des **Lumes** (notre monnaie magique ✨).  
+
+---
+
+🎯 **4. Accomplis des quêtes**  
+→ Consulte <1352143818929078322> pour découvrir les quêtes journalières et hebdomadaires.  
+→ Récompenses : **Lumes, bénédictions, et honneur** !  
+
+---
+
+💡 **5. Besoin d’aide ?**  
+→ Le salon <1345479227310346335> est là pour toutes tes questions.  
+→ Ou bien invoque le **Messager** dans les rumeurs pour obtenir des réponses étranges…  
+
+---
+
+🍃 *Ton histoire ne fait que commencer.  
+Marche avec sagesse, et que les Souffles guident ton pas !*"""
+
+# Classe bouton
+class GuideButton(discord.ui.View):
+    def __init__(self):
         super().__init__(timeout=None)
-        self.member = member
 
-    @discord.ui.button(label="📜 Découvrir mon guide", style=discord.ButtonStyle.primary)
-    async def send_ephemeral(self, interaction: discord.Interaction, button: discord.ui.Button):
-        if interaction.user.id != self.member.id:
-            await interaction.response.send_message("⚠️ Ce guide n'est pas pour toi !", ephemeral=True)
-            return
-        
-        message = random.choice(ephemeral_messages).replace("{user}", interaction.user.mention)
-        await interaction.response.send_message(message, ephemeral=True)
+    @discord.ui.button(label="📜 Découvrir mon guide", style=discord.ButtonStyle.primary, custom_id="welcome_guide")
+    async def show_guide(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await interaction.response.send_message(guide_message, ephemeral=True)
 
 @bot.event
 async def on_ready():
-    print(f'✅ {bot.user} est bien en ligne sur Discord !')
+    print(f'✅ {bot.user} est bien en ligne !')
 
 @bot.event
 async def on_member_join(member):
     channel = bot.get_channel(WELCOME_CHANNEL_ID)
     if channel:
         welcome_text = random.choice(welcome_messages).replace("{user}", member.mention)
-        await channel.send(welcome_text, view=WelcomeView(member))
+        await channel.send(welcome_text, view=GuideButton())  # bouton intégré
 
 bot.run(TOKEN)
