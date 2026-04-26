@@ -2,13 +2,21 @@ import discord
 import random
 import os
 from discord.ext import commands
+from dotenv import load_dotenv
+
+load_dotenv()
 
 TOKEN = os.getenv("DISCORD_TOKEN")
-GUILD_ID = int(os.getenv("GUILD_ID"))
-WELCOME_CHANNEL_ID = int(os.getenv("WELCOME_CHANNEL_ID"))
+if not TOKEN:
+    raise ValueError("DISCORD_TOKEN environment variable is not set")
+GUILD_ID_STR = os.getenv("GUILD_ID")
+GUILD_ID = int(GUILD_ID_STR) if GUILD_ID_STR else None
+WELCOME_CHANNEL_ID_STR = os.getenv("WELCOME_CHANNEL_ID")
+if not WELCOME_CHANNEL_ID_STR:
+    raise ValueError("WELCOME_CHANNEL_ID environment variable is not set")
+WELCOME_CHANNEL_ID = int(WELCOME_CHANNEL_ID_STR)
 
 intents = discord.Intents.default()
-intents.members = True
 bot = commands.Bot(command_prefix="!", intents=intents)
 
 # Messages de bienvenue aléatoires (channel public)
@@ -39,7 +47,7 @@ Ton périple commence ici. Pour trouver ta place parmi nous, suis ces étapes :
 ---
 
 🎭 **2. Choisis ton histoire**  
-→ Rendez-toi dans Salons et Roles pour choisir tes rôles et débloquer les accès à tout le serveur.  
+→ Rendez-toi dans Salons et Roles pour choisir tes rôles et débloquer les accès à tout le serveur.
 → Va écrire ton nom dans le registre de guilde <#1497568260722266112>
 
 ---
@@ -81,6 +89,7 @@ class GuideButton(discord.ui.View):
 @bot.event
 async def on_ready():
     print(f'✅ {bot.user} est bien en ligne !')
+    bot.add_view(GuideButton())
 
 @bot.event
 async def on_member_join(member):
