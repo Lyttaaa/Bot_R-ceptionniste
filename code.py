@@ -75,7 +75,7 @@ class GuideButton(discord.ui.View):
         super().__init__(timeout=None)
 
     @discord.ui.button(label="📜 Découvrir mon guide", style=discord.ButtonStyle.primary, custom_id="welcome_guide")
-    async def show_guide(self, interaction: discord.Interaction, button: discord.ui.Button):
+    async def show_guide(self, interaction: discord.Interaction):
         await interaction.response.send_message(guide_message, ephemeral=True)
 
 @bot.event
