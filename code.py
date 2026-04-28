@@ -86,10 +86,17 @@ class GuideButton(discord.ui.View):
     async def show_guide(self, interaction: discord.Interaction, button: discord.ui.Button):
         await interaction.response.send_message(guide_message, ephemeral=True)
 
+
+@bot.tree.command(name="ping", description="Test si le bot répond")
+async def ping(ctx):
+    await ctx.response.send_message("Pong :ping_pong:")
+    print(f"[DEBUG] Ping reçu de {ctx.user}")
+
 @bot.event
 async def on_ready():
-    print(f'✅ {bot.user} est bien en ligne !')
+    await bot.tree.sync()
     bot.add_view(GuideButton())
+    print(f"✅ {bot.user} est connecté et actif !")
 
 @bot.event
 async def on_member_join(member):
